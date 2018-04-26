@@ -3,6 +3,8 @@
 #include <PubSubClient.h>
 #include <driver/dac.h>
 
+#include "image.h"
+
 #define SMOOTHSTEP(x) ((x) * (x) * (3 - 2 * (x))) //SMOOTHSTEP expression.
 #define TAM_IMG
 
@@ -21,6 +23,8 @@ int j = 0;             //Just an Iterator.
 int i = 0;             //Just another Iterator.
 float A = 0.0;         //Input Min Value
 float B = 255.0;       //Input Max Value
+float C = 0.0;         //Input Min Value
+float D = 255.0;       //Input Max Value
 float N = 1000.0;       //Input number of steps for transition
 float X;               //final smoothstepped value
 float v;               //smoothstep expression variable
@@ -35,7 +39,7 @@ int value = 0;
 void setup() {
   
   Serial.begin(921600);
-  setup_wifi();
+  //setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   pinMode(DAC_CHANNEL_1, OUTPUT);
@@ -126,7 +130,7 @@ void loop() {
   double tick = 0;
 
 
-  keepClient();
+/*  //keepClient();
   while(1) {
 
     tick = tick + 1;
@@ -137,13 +141,13 @@ void loop() {
 
     setOutput(x_out, y_out);
   }
-
+*/
 
   uint8_t x_out;
   uint8_t y_out = 0;
 
   //dac_out_voltage(DAC_CHANNEL_1, x_out); // chanel 1 X
-  dac_out_voltage(DAC_CHANNEL_2, y_out); //channel 2 Y
+  //dac_out_voltage(DAC_CHANNEL_2, y_out); //channel 2 Y
 
 /*  while(1)
   {
@@ -157,7 +161,8 @@ void loop() {
   {
     v = j / N;                    // Iteration divided by the number of steps.
     v = SMOOTHSTEP(v);            // Run the smoothstep expression on v.
-    x_out = (B * v) + (A * (1 - v));  // Run the linear interpolation expression using the current 
+    x_out = (B * v) + (A * (1 - v));  // Run the linear interpolation expression using the current
+    y_out = (D * v) + (C * (1 - v)); 
                                   //smoothstep result.
     for ( i=0; i < X ; i++)       // This loop could the relevant code for each time your 
                                   //motor steps. 
@@ -168,12 +173,21 @@ void loop() {
                                   //corresponding  float value
     //Serial.println(x_out);            // prints the soothstepped value
 
-    //dac_out_voltage(DAC_CHANNEL_1, x_out); // chanel 1 X
-  
+    dac_out_voltage(DAC_CHANNEL_1, x_out); // chanel 1 X
+    dac_out_voltage(DAC_CHANNEL_2, y_out);
+
+
     Serial.println("CLICK!!!");   // this could be where you trigger your timelapse shutter 
     j++;                          // Increments j by 1.
   }
 
+    
+    /*while(1)
+    {
+      dac_out_voltage(DAC_CHANNEL_1, 0); // chanel 1 X
+      dac_out_voltage(DAC_CHANNEL_2, 0);
+    }
+*/
   /*if((millis() - tempo_anterior) >= 1000)
   {
     tempo_anterior = millis();
