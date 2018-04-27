@@ -24,7 +24,7 @@ float A = 0.0;         //Input Min Value
 float B = 255.0;       //Input Max Value
 float C = 0.0;         //Input Min Value
 float D = 255.0;       //Input Max Value
-float N = 100.0;       //Input number of steps for transition
+float N = 1000.0;       //Input number of steps for transition
 float X;               //final smoothstepped value
 float v;               //smoothstep expression variable
 
@@ -161,14 +161,18 @@ for(k=0,z=1; ((k+2) < TAM_IMG) && ((z+2) < TAM_IMG); k+=2, z+=2)
         x_out = (image[k] * v) + (image[k] * (1 - v));          //smoothstep result.
         y_out = (image[z] * v) + (image[z] * (1 - v)); 
 
-        //Serial.print("  ");        
-        //Serial.println(x_out);            // prints the soothstepped value
+        Serial.print("  ");        
+        Serial.println(x_out);            // prints the soothstepped value
+        Serial.println(y_out);
+
+        //map();
 
         dac_out_voltage(DAC_CHANNEL_1, x_out); // chanel 1 X
-        dac_out_voltage(DAC_CHANNEL_2, y_out);
+        dac_out_voltage(DAC_CHANNEL_2, -y_out);
 
         j++;                          // Increments j by 1.
     }
+    j=0;
 }
     
     /*while(1)
