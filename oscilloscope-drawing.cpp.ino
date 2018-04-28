@@ -24,7 +24,7 @@ float A = 0.0;         //Input Min Value
 float B = 255.0;       //Input Max Value
 float C = 0.0;         //Input Min Value
 float D = 255.0;       //Input Max Value
-float N = 1000.0;       //Input number of steps for transition
+int N = 1;       //Input number of steps for transition
 float X;               //final smoothstepped value
 float v;               //smoothstep expression variable
 
@@ -127,12 +127,14 @@ void setup()
   pinMode(DAC_CHANNEL_2, OUTPUT);
 }
 
-void loop() {
+void loop() 
+{
 
   double tick = 0;
   uint8_t x_out;
   uint8_t y_out = 0;
   int k,z;
+  int contador1,contador2;
 
 /*  //keepClient();
   while(1) {
@@ -146,35 +148,38 @@ void loop() {
     setOutput(x_out, y_out);
   }
 */
+  for(k=0,z=1; ((k+2) < TAM_IMG) && ((z+2) < TAM_IMG); k+=2, z+=2)
+  {   
+    contador1++;
 
-for(k=0,z=1; ((k+2) < TAM_IMG) && ((z+2) < TAM_IMG); k+=2, z+=2)
-{   
-  //0123456
-    if (j < N)                      // Keep looping until we hit the pre-defined max number                                   // of steps
+    while (j < N)                      // Keep looping until we hit the pre-defined max number                                   // of steps
     {
+      contador2++;
         v = j / N;                    // Iteration divided by the number of steps.
         v = SMOOTHSTEP(v);            // Run the smoothstep expression on v.
 
-        //x_out = (XYZ_points[k] * v) + (XYZ_points[k] * (1 - v));          //smoothstep result.
-        //y_out = (XYZ_points[z] * v) + (XYZ_points[z] * (1 - v)); 
+        x_out = (image[k+2] * v) + (image[k] * (1 - v));          //smoothstep result.
+        y_out = (image[z+2] * v) + (image[z] * (1 - v)); 
 
-        x_out = (image[k] * v) + (image[k] * (1 - v));          //smoothstep result.
-        y_out = (image[z] * v) + (image[z] * (1 - v)); 
-
-        Serial.print("  ");        
-        Serial.println(x_out);            // prints the soothstepped value
-        Serial.println(y_out);
-
-        //map();
+        //Serial.print("  ");        
+        //Serial.println(x_out);            // prints the soothstepped value
+        //Serial.println(y_out);
 
         dac_out_voltage(DAC_CHANNEL_1, x_out); // chanel 1 X
         dac_out_voltage(DAC_CHANNEL_2, -y_out);
 
-        j++;                          // Increments j by 1.
+        j++;                    
     }
     j=0;
-}
-    
+
+    Serial.print("contador1:");
+    Serial.println(contador1);
+
+    Serial.print("contador2:");
+    Serial.println(contador2);
+
+  }
+
     /*while(1)
     {
       dac_out_voltage(DAC_CHANNEL_1, 0); // chanel 1 X
